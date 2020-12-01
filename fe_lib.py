@@ -57,3 +57,55 @@ def get_key(my_dict, val):
                 return f(val)
             except:
                 return np.mean([key for key, value in my_dict.items()])
+            
+            
+def get_high_corrs(df, 
+                   col_list, 
+                   min_corr=0.90,
+                   max_corr=1.0,
+                   include_max=False):
+    
+    '''
+    To get highly correlated features:
+    - applicable to pandas dataframe only
+    - result in correlation between a given range of values (max/min)
+    - option to include max correlation (default=1.0)
+    - results in pandas series 
+    '''
+                   
+    c = df[col_list].corr().abs()
+    s = c.unstack()
+    so = s.sort_values(kind="quicksort", ascending=False)
+    
+    if include_max:
+        answer = so[(so<=max_corr) & (so>=min_corr)]
+    else:
+        answer = so[(so<max_corr) & (so>=min_corr)]
+    
+    return answer
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   

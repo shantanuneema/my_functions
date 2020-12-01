@@ -75,3 +75,36 @@ def extract_target_paths(df, rt_model,
         extracted_paths.append(temp_path)
         
     return True
+
+
+def select_features(X_train, y_train, X_test):
+    
+    '''
+    To select important features for regression model
+    - uses SelectKBest from sklearn
+    - used in main function "get_top_features" (under development) # TODO
+    '''
+    
+    import sklearn.feature_selection import SelectKBest, f_regression
+    
+    fs = SelectKBest(score_func=f_regression, k="all")
+    fs.fit(X_train, y_train)
+    X_train_fs = fs.transform(X_train)
+    X_test_fs = fs.transform(X_test)
+    
+    return X_train_fs, X_test_fs, fs
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
