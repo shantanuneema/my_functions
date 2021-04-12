@@ -85,7 +85,22 @@ def get_high_corrs(df,
     return answer
                    
                    
-                   
+# Read parquet file from a folder
+
+import os
+import pyarrow.parquet as pq
+
+def parquets_to_df(parquet_folder, col_names):
+    
+    parquet_files = []
+    files = os.listdir(parquet_folder)
+    for file in files:
+        if ".parquet" in file:
+            table = pq.read_table(parquet_folder + file, columns = col_names).to_pandas()
+            parquet_files.append(table)
+    df = pd.concat(parquet_files).reset_index(drop = True)
+    
+    return df
                    
                    
                    
