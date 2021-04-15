@@ -103,24 +103,38 @@ def parquets_to_df(parquet_folder, col_names):
     return df
                    
                    
+def return_quasi_const_categories(df, thresh = 0.998):
+  
+    '''
+    to remove quasi and constant features in large amount of feature space (univariate)
+    '''
+
+    quasi_cat_const = []
+
+    for fea in df.columns:
+        predominant_cat = (df[fea].value_counts()/len(df)).values[0]
+        if predominant_cat > thresh: quasi_cat_const.append(fea)
+            
+    return quasi_cat_const
                    
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
+def get_duplicated_value_pairs(df):
+  
+    '''
+    To return a dictionary with duplicated features by data values
+    - keys of the returning feature dictionary can be selected as features and values may be dropped for further analysis
+    '''
+    
+    duplicated_fea_dict = {}
+    duplicated_features = []
+    
+    for i in range(len(df.columns)):
+        fea_1 = df.columns[i]
+        if fea_1 not in duplicated_features:
+            duplicated_fea_dict[fea_1] = []
+            for fea_2 in df.columns[i + 1: ]:
+                if df[fea_1].equals(df[fea_2]):
+                    duplicated_fea_dict[fea_1].append(fea_2)
+                    duplicated_features.append(fea_2)
+               
+    return duplicated_fea_dict
                    
