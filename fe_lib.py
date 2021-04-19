@@ -137,4 +137,21 @@ def get_duplicated_value_pairs(df):
                     duplicated_features.append(fea_2)
                
     return duplicated_fea_dict
+                  
+def correlation(df, thresh = 0.8):
+  
+    '''
+    extract a set of correlated features in given dataframe (including y variable)
+    - Take only numerical features
+    '''
+    
+    corr_features = set()
+    corr_matrix = df.corr()
+      
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            if abs(corr_matrix.iloc[i, j] > thresh:
+                 col = corr_matrix.columns[i]
+                 corr_features.add(col)
                    
+    return corr_features
