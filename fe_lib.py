@@ -150,7 +150,7 @@ def correlation(df, thresh = 0.8):
       
     for i in range(len(corr_matrix.columns)):
         for j in range(i):
-            if abs(corr_matrix.iloc[i, j] > thresh:
+            if abs(corr_matrix.iloc[i, j]) > thresh:
                  col = corr_matrix.columns[i]
                  corr_features.add(col)
                    
