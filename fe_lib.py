@@ -155,3 +155,27 @@ def correlation(df, thresh = 0.8):
                  corr_features.add(col)
                    
     return corr_features
+
+def get_corrleated_df_groups(X_train):
+    
+    """
+    Function to determine a list of dataframes with correlated feature groups
+    """
+    
+    corr_matrix = X_train.corr()
+    corr_matrix = corr_matrix.abs().unstack()
+    corr_matrix = corr_matrix[(corr_matrix >= 0.8) & (corr_matrix < 1)]
+    df_cormat = pd.DataFrame(corr_matrix).reset_index(drop = False)
+    df_cormat.columns = ["Feature1", "Feature2", "abs(R)"]
+    
+    grouped_features = []
+    correlated_grps = []
+    
+    for feature in df_cormat["Feature1"].unique():
+        if feature not in grouped_features: 
+            df_corr = df_cormat[df_cormat["Feature1"] == feature]
+            grouped_features = grouped_features + list(df_corr["Feature2"].unique()) + [feature]
+
+            correlated_grps.append(df_corr)
+    
+    return correlated_grps
