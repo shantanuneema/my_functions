@@ -179,3 +179,13 @@ def get_corrleated_df_groups(X_train):
             correlated_grps.append(df_corr)
     
     return correlated_grps
+  
+# Function to build monthly iterator with first day of the month and number of days in the same month
+def month_iterator(from_date, read_date):
+    # generator to run monthly calendarized dates between any given dates
+    start = 12 * from_date.year + from_date.month - 1
+    end = 12 * read_date.year + read_date.month
+    for year_month in range(start, end):
+        year, month = divmod(year_month, 12)
+        yield dt.datetime(year, month + 1, 1).date(),\
+              calendar.monthrange(year, month + 1)[1]
