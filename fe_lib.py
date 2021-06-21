@@ -189,3 +189,7 @@ def month_iterator(from_date, read_date):
         year, month = divmod(year_month, 12)
         yield dt.datetime(year, month + 1, 1).date(),\
               calendar.monthrange(year, month + 1)[1]
+        
+# Example use
+for key, value in month_iterator(pd.to_datetime('2015-01-01'), pd.to_datetime('2017-02-01')):
+    print(key, value)
