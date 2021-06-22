@@ -193,3 +193,13 @@ def month_iterator(from_date, read_date):
 # Example use
 for key, value in month_iterator(pd.to_datetime('2015-01-01'), pd.to_datetime('2017-02-01')):
     print(key, value)
+    
+# Function to reduce cardinality in categorical features
+def cardinality_reduction(df, categorical_cols, min_thresh = 0.03):
+    binned_level_dict = {}
+    for col in categorical_cols:
+        value_series = df[col].value_counts() / len(df) < min_thresh
+        levels_to_bin = list(value_series[value_series].index)
+        df[col] = df[col].replace(dict(zip(levels_to_bin, len(levels_to_bin) * ['Other'])))
+        binned_level_dict[col] = pd.Series(levels_to_bin)
+    return df, binned_level_dict
