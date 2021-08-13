@@ -5,7 +5,7 @@ import numpy as np
 def outlier_treatment_on_dataframe(df, 
                                    feature,
                                    data_treatment = "winsorize",                                  
-                                   consider_lbound = True,                                  
+                                   consider_lbound = False,                                  
                                    only_positive = True, 
                                    iqr_percentile_range = [25, 75]):    
     
@@ -27,24 +27,24 @@ def outlier_treatment_on_dataframe(df,
     else:
         q_1, q_3 = np.percentile(df[feature], iqr_percentile_range)  
 
-    # q_1, q_3 = np.percentile(df[feature], iqr_percentile_range)
     ubound = q_3 + (q_3 - q_1) * 1.5    
     lbound = q_1 - (q_3 - q_1) * 1.5
 
     if data_treatment == "winsorize":  
         df.loc[df[feature] >= ubound, feature] = ubound        
-        if consider_lbound:
-            df.loc[df[feature] <= lbound, feature] = lbound
-        else:            
-            if only_positive:
-                df.loc[df[feature] <= lbound, feature] = 0.
-    
+        if only_positive:
+            df.loc[df[feature] <= lbound, feature] = 0.
+        else: 
+            df.loc[df[feature] <= lbound, feature] = lbound 
+
     elif data_treatment == "remove_outliers":
         df = df[df[feature] <= ubound]
         if only_positive:
             df = df[df[feature] >= 0] if only_positive else df[df[feature] >= lbound]
-    
-    else: print("Outliers present in {}".format(feature))
+        if consider_lbound:
+            df.loc[df[feature] <= lbound, feature] = lbound
+
+    else: print(f'Outliers exist in column: {feature}')
     
     return df
 
