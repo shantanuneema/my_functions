@@ -4,41 +4,48 @@ import numpy as np
 
 def outlier_treatment_on_dataframe(df, 
                                    feature,
-                                   data_treatment="winsorize",                                  
-                                   consider_lbound=True,                                  
-                                   only_positive=True):    
+                                   data_treatment = "winsorize",                                  
+                                   consider_lbound = True,                                  
+                                   only_positive = True, 
+                                   iqr_percentile_range = [25, 75]):    
     
     '''
-    function to replace/drop outliers by either winsorizing or removing    
-        - based on Q1/3 -/+ 1.5(IQR)    
-        - returns can take only positive values if only_positive = True        
-        - returns 0 for negative values if data_treatment = "winsorize"        
-        - drop negative values if data_treatment == "remove_outliers"    
+    function to replace/drop outliers by either winsorizing or removing    
+        - based on Q1/3 -/+ 1.5(IQR)    
+        - returns can take only positive values if only_positive = True        
+        - returns 0 for negative values if data_treatment = "winsorize"        
+        - drop negative values if data_treatment == "remove_outliers"    
     '''
     
-    assert feature in df.columns, "Key Error: {}".feature
+    assert feature in df.columns, "Key Error: {}".feature
     assert isinstance(data_treatment, str), "incorrect data type, data_treatment must be a string"
     assert {data_treatment}.issubset(["winsorize", "remove_outliers", None]), "incorrect outlier treatment"
     
-    q_1, q_3 = np.percentile(df[feature], [25, 75])
-    ubound = q_3 + (q_3-q_1)*1.5    
-    lbound = q_1 - (q_3-q_1)*1.5
-    
-    if data_treatment == "winsorize":  
-        df.loc[df[feature] >= ubound, feature] = ubound        
+    if any(df[feature].isnull()):
+        print(f'nulls present in column: {feature}')
+        q_1, q_3 = np.percentile(df[feature].dropna(), iqr_percentile_range)
+    else:
+        q_1, q_3 = np.percentile(df[feature], iqr_percentile_range)  
+
+    # q_1, q_3 = np.percentile(df[feature], iqr_percentile_range)
+    ubound = q_3 + (q_3 - q_1) * 1.5    
+    lbound = q_1 - (q_3 - q_1) * 1.5
+
+    if data_treatment == "winsorize":  
+        df.loc[df[feature] >= ubound, feature] = ubound        
         if consider_lbound:
             df.loc[df[feature] <= lbound, feature] = lbound
-        else:            
+        else:            
             if only_positive:
                 df.loc[df[feature] <= lbound, feature] = 0.
-    
+    
     elif data_treatment == "remove_outliers":
         df = df[df[feature] <= ubound]
         if only_positive:
             df = df[df[feature] >= 0] if only_positive else df[df[feature] >= lbound]
-    
+    
     else: print("Outliers present in {}".format(feature))
-    
+    
     return df
 
 
