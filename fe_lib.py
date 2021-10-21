@@ -210,3 +210,25 @@ def cardinality_reduction(df, categorical_cols, min_thresh = 0.03, combined_cat_
         df[col] = df[col].replace(dict(zip(levels_to_bin, len(levels_to_bin) * [combined_cat_name])))
         binned_level_dict[col] = pd.Series(levels_to_bin)
     return df, binned_level_dict
+  
+def calculate_vif_num(X, thresh):
+    X = X.assign(const=1)  # add constant as expected
+    cols = X.columns
+    variables = np.arange(X.shape[1])
+    dropped = True
+    while dropped:
+        dropped = False
+        c = X[cols[variables]].values
+        vif = [variance_inflation_factor(c, ix) for ix in np.arange(c.shape[1])]
+        vif = vif[:-1]  # all but the last element (constant removal)
+        maxloc = vif.index(max(vif))
+
+        if max(vif) > thresh:
+            # print('dropping \'' + X[cols[variables]].columns[maxloc] + '\' with VIF: ' + str(round(max(vif),1)))
+            variables = np.delete(variables, maxloc)
+            dropped = True
+
+    variables = np.delete(variables, len(variables) - 1)
+    # print('Remaining variables:')
+    # print(X.columns[variables])
+    return X[cols[variables]]
